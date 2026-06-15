@@ -35,6 +35,14 @@ class ReservasiController extends Controller
         // Ambil data paket
         $paket = PaketLayanan::findOrFail($validated['paket_id']);
 
+        if ($validated['jumlah_orang'] > $paket->kapasitas) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'jumlah_orang' => 'Jumlah orang melebihi kapasitas paket (' . $paket->kapasitas . ' orang).'
+            ]);
+        }
+
         // Simpan ke session untuk review
         session([
             'reservasi' => [
@@ -117,7 +125,7 @@ class ReservasiController extends Controller
         Config::$isSanitized = true;
         Config::$is3ds = true;
 
-        $totalHarga = $reservasi->paket->harga * $reservasi->jumlah_orang;
+        $totalHarga = $reservasi->paket->harga;
 
         $midtransPayload = [
             'transaction_details' => [
@@ -133,7 +141,7 @@ class ReservasiController extends Controller
                 [
                 'id' => 'paket_' . $reservasi->paket_id,
                 'price' => (int) $reservasi->paket->harga,
-                'quantity' => (int) $reservasi->jumlah_orang,
+                'quantity' => 1,
                 'name' => $reservasi->paket->nama_paket,
                 ]
             ],

@@ -384,7 +384,7 @@
                                 <small class="text-muted">{{ $item->jam_acara ?? '-' }}</small>
                             </td>
                             <td>{{ $item->jumlah_orang }} orang</td>
-                            <td><strong>Rp {{ number_format(($item->paket->harga ?? 0) * $item->jumlah_orang, 0, ',', '.') }}</strong></td>
+                            <td><strong>Rp {{ number_format($item->paket->harga ?? 0, 0, ',', '.') }}</strong></td>
                             <td>
                                 {{-- PERBAIKAN: Gunakan status_pembayaran untuk menampilkan status yang benar --}}
                                 @if($item->status_pembayaran == 'lunas')

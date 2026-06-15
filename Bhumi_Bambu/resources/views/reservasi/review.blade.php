@@ -118,12 +118,12 @@
           <div class="review-price">
             <div class="review-price-row">
               <span>{{ session('reservasi.paket_nama') }} x {{ session('reservasi.jumlah_orang') }} orang</span>
-              <span>Rp {{ number_format(session('reservasi.paket_harga') * session('reservasi.jumlah_orang'), 0, ',', '.') }}</span>
+              <span>Rp Rp {{ number_format(session('reservasi.paket_harga'), 0, ',', '.') }}</span>
             </div>
             <div class="review-price-divider"></div>
             <div class="review-price-row total">
               <span>Total Pembayaran</span>
-              <span>Rp {{ number_format(session('reservasi.paket_harga') * session('reservasi.jumlah_orang'), 0, ',', '.') }}</span>
+              <span>Rp Rp {{ number_format(session('reservasi.paket_harga'), 0, ',', '.') }}</span>
             </div>
           </div>
         </div>

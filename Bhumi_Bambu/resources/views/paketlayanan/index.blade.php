@@ -138,6 +138,17 @@
             font-weight: 700;
         }
 
+        .filter-section {
+            background: white;
+            padding: 20px 25px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 20px 10px rgba(0,0,0,0.08);
+        }
+
+
+
+
         .btn-add {
             background: #2d5f3f;
             color: white;
@@ -406,6 +417,33 @@
                 </button>
             </div>
 
+            <div class="filter-section">
+                <form class="d-flex align-items-center gap-3">
+                    <div class="flex-grow-1">
+                        <input
+                            type="text"
+                            id="searchPaket"
+                            placeholder="Cari nama paket, venue, fasilitas..."
+                            class="form-control"
+                            style="border-radius: 25px;"
+                        >           
+                    </div>
+
+                    <button type="button" class="btn btn-primary">
+                        <i  class="fas fa-search me-2"></i> cari
+                    </button>
+
+                    <button 
+                        type="button"
+                        class="btn btn0secondary"
+                        onclick="document.getElementById('searchPaket').value='';filterPaket();"
+                    >
+                        <i class="fas fa-times me-2"></i> rest 
+                    </button>
+                    </div>
+                </form>
+            </div>
+
             {{-- Table --}}
             <div class="table-card">
                 <div class="table-responsive">
@@ -535,5 +573,34 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    function filterPaket() {
+        const keyword = document
+            .getElementById('searchPaket')
+            .value
+            .toLowerCase();
+
+        const rows = document.querySelectorAll('tbody tr');
+
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+
+            if (text.includes(keyword)) {
+            row.style.display = '';
+            } else {
+            row.style.display = 'none';
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        document
+            .getElementById('searchPaket')
+            .addEventListener('keyup', filterPaket);
+
+    });
+    </script>
 </body>
 </html>

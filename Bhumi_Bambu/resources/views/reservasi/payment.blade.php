@@ -76,7 +76,7 @@
           <div class="payment-box">
             <div class="payment-total-label">Total Pembayaran</div>
             <div class="payment-total-value">
-              Rp {{ number_format($reservasi->paket->harga * $reservasi->jumlah_orang, 0, ',', '.') }}
+              Rp {{ number_format($reservasi->paket->harga, 0, ',', '.') }}
             </div>
           </div>
 
@@ -125,7 +125,7 @@
           <div class="summary-divider"></div>
 
           <div class="summary-section price">
-            <div class="summary-label">Harga per orang</div>
+            <div class="summary-label">Harga paket</div>
             <div class="summary-value">
               Rp {{ number_format($reservasi->paket->harga, 0, ',', '.') }}
             </div>
@@ -134,7 +134,7 @@
           <div class="summary-section total">
             <div class="summary-label">Total Pembayaran</div>
             <div class="summary-value">
-              Rp {{ number_format($reservasi->paket->harga * $reservasi->jumlah_orang, 0, ',', '.') }}
+              Rp {{ number_format($reservasi->paket->harga, 0, ',', '.') }}
             </div>
           </div>
 

@@ -115,8 +115,8 @@
               </div>
 
               <div class="card-price">
-                <span class="price-label">Total:</span>
-                <span class="price-value">Rp {{ number_format(($reservasi->paket->harga ?? 0) * $reservasi->jumlah_orang, 0, ',', '.') }}</span>
+                <span class="price-label">Total Pembayaran: (1 paket)</span>
+                <span class="price-value">Rp {{ number_format($reservasi->paket->harga ?? 0, 0, ',', '.') }}</span>
               </div>
 
               {{-- PERBAIKAN: Tombol aksi berdasarkan status_pembayaran --}}

@@ -29,7 +29,7 @@ class PaketLayananController extends Controller
         $request->validate([
             'nama_paket' => 'required|string|max:255',
             'venue' => 'nullable|string|max:255',
-            'harga' => 'required|integer|min:0',
+            'harga' => 'required|integer|gt:0',
             'kapasitas' => 'required|integer|min:1',
             'fasilitas' => 'nullable|string',
             'deskripsi' => 'nullable|string',
@@ -90,7 +90,7 @@ class PaketLayananController extends Controller
         $request->validate([
             'nama_paket' => 'required|string|max:255',
             'venue' => 'nullable|string|max:255',
-            'harga' => 'required|integer|min:0',
+            'harga' => 'required|integer|gt:0',
             'kapasitas' => 'required|integer|min:1',
             'fasilitas' => 'nullable|string',
             'deskripsi' => 'nullable|string',

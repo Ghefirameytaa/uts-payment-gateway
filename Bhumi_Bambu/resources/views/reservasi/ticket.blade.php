@@ -172,7 +172,7 @@
 
         <div class="ticket-price">
           <div class="price-label">Total Pembayaran</div>
-          <div class="price-value">Rp {{ number_format($reservasi->paket->harga * $reservasi->jumlah_orang, 0, ',', '.') }}</div>
+          <div class="price-value">Rp {{ number_format(optional($reservasi->paket)->harga ?? 0, 0, ',', '.') }}</div>
         </div>
 
         <div class="ticket-qr">

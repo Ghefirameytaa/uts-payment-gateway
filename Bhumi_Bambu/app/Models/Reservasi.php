@@ -61,7 +61,7 @@ class Reservasi extends Model
         if (!$this->paket) {
             return 0;
         }
-        return $this->paket->harga * $this->jumlah_orang;
+        return $this->paket->harga;
     }
 
     // Accessor - Format Harga

@@ -248,7 +248,7 @@
                                 {{ $item->kode_booking ?? 'BKG-' . str_pad($item->id, 6, '0', STR_PAD_LEFT) }} - 
                                 {{ $item->nama_lengkap }} - 
                                 {{ $item->paket->nama_paket ?? '-' }}
-                                (Rp {{ number_format(($item->paket->harga ?? 0) * $item->jumlah_orang, 0, ',', '.') }})
+                                Rp {{ number_format($item->paket->harga ?? 0, 0, ',', '.') }}
                             </option>
                         @endforeach
                     </select>
