@@ -14,7 +14,7 @@
     <div class="bb-container bb-hero-inner">
       <div class="bb-hero-left">
         <span class="bb-hero-label">Beranda Pelanggan</span>
-        <h1 class="bb-hero-title">Halo, Farah 👋</h1>
+        <h1 class="bb-hero-title">Halo, {{ Auth::user()->nama_user }} 👋</h1>
         <p class="bb-hero-sub">Pilih paket yang kamu butuhkan, lalu lanjutkan reservasi dengan mudah.</p>
       </div>
 

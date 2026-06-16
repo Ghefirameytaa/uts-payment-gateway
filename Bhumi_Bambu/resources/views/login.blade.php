@@ -290,6 +290,11 @@
                         placeholder="admin@bhumibambu.com" 
                         required
                     >
+                    @error('email')
+                        <div style="color:red; font-size:12px; margin-top:5px;">
+                            {{ $message }}
+                        </div>
+                    @enderror
                 </div>
 
                 <div class="form-group">
@@ -308,6 +313,12 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
                         </span>
+                        
+                         @error('password')
+                            <div style="color:red; font-size:12px; margin-top:5px;">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 </div>
 

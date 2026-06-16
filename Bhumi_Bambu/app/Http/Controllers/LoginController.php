@@ -20,22 +20,29 @@ class LoginController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
-        if (Auth::attempt($credentials, $request->has('remember'))) {
-            $request->session()->regenerate();
 
-            if (Auth::user()->role === 'admin') {
-                return redirect()->route('admin.dashboard');
-            }
+        $user = \App\Models\User::where('email', $request->email)->first();
 
-            return redirect()->intended(('beranda'));
+        if (!$user) {
+            return back()->withErrors([
+            'email' => 'Email belum terdaftar'
+            ])->onlyInput('email');
         }
 
-        return back()->withErrors([
+        if (!Auth::attempt($request->only('email', 'password'), $request->has('remember'))) {
+            return back()->withErrors([
+            'password' => 'Password salah'
+            ])->onlyInput('email');
+        }
 
-            'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email');
+        $request->session()->regenerate();
 
-    }
+        if (Auth::user()->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+            return redirect()->intended('beranda');
+        }
 
     public function logout(Request $request)
     {
@@ -46,46 +53,3 @@ class LoginController extends Controller
         return redirect('/');
     }
 }
-
-
-
-// <!-- <?php
-
-// namespace App\Http\Controllers;
-// use App\Http\Controllers\Controller;
-// use Illuminate\Support\Facades\Auth;
-// use Illuminate\Http\Request;
-
-// class LoginController extends Controller
-// {
-//     public function login()
-//     {
-//         return view('Login');
-//     }
-
-//     public function authenticate(Request $request)
-//     {
-//         $credentials = $request->validate([
-//             'email' => ['required', 'email'],
-//             'password' => ['required'],
-//         ]);
-
-//         if (Auth::attempt($credentials)) {
-//             $request->session()->regenerate();
-//             return redirect()->intended('admin.dashboard');
-//         }
-
-//         return back()->withErrors([
-//             'email' => 'The provided credentials do not match our records.',
-//         ]);
-//     }
-
-//     public function logout(Request $request)
-//     {
-//         Auth::logout();
-//         $request->session()->invalidate();
-//         $request->session()->regenerateToken();
-//         return redirect('/');
-//     }
-// } 
-
