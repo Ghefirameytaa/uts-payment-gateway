@@ -17,6 +17,18 @@
 
   @include('partials.header')
 
+  @if (session('success'))
+      <div style="background-color: #d4edda; color: #155724; padding: 15px; margin: 20px auto; max-width: 1240px; border-radius: 8px; border: 1px solid #c3e6cb; text-align: center; font-weight: 500;">
+          {{ session('success') }}
+      </div>
+  @endif
+
+  @if (session('error'))
+      <div style="background-color: #f8d7da; color: #721c24; padding: 15px; margin: 20px auto; max-width: 1240px; border-radius: 8px; border: 1px solid #f5c6cb; text-align: center; font-weight: 500;">
+          {{ session('error') }}
+      </div>
+  @endif
+
   @yield('content')
 
   @include('partials.footer')

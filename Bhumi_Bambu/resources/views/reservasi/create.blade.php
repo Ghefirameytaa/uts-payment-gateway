@@ -154,7 +154,6 @@
                 class="res-input @error('email') error @enderror"
                 value="{{ old('email', auth()->user()->email) }}"
                 placeholder="misalnya email@contoh.com"
-                readonly
                 required
               >
 

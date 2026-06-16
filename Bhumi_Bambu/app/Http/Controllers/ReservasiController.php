@@ -93,7 +93,7 @@ class ReservasiController extends Controller
             'tanggal_reservasi' => $data['tanggal_reservasi'],
             'jam_acara' => $data['jam_acara'],
             'jumlah_orang' => $data['jumlah_orang'],
-            'catatan' => $data['catatan'],
+            'catatan_pembayaran' => $data['catatan'],
             'status' => 'pending',
         ]);
 
@@ -228,7 +228,7 @@ class ReservasiController extends Controller
     }
 
     public function ticket($id)
-        {
+    {
             $reservasi = Reservasi::with('paket')->findOrFail($id);
     
             // Cek apakah reservasi milik user yang login
@@ -242,7 +242,24 @@ class ReservasiController extends Controller
         }
 
         return view('reservasi.ticket', compact('reservasi'));
+    }
+
+    public function destroy($id)
+    {
+        $reservasi = Reservasi::where('id', $id)
+                              ->where('user_id', auth()->id()) // pastikan milik user ybs
+                              ->firstOrFail();
+
+        // Hanya bisa hapus jika status_pembayaran masih 'belum_bayar'
+        if ($reservasi->status_pembayaran !== 'belum_bayar') {
+            return back()->with('error', 'Hanya reservasi yang belum dibayar yang dapat dihapus.');
         }
+
+        $reservasi->delete();
+
+        return redirect()->route('reservasi.saya')
+                         ->with('success', 'Reservasi berhasil dihapus.');
+    }
 
         //tampilkan daftar reservasi pelanggan
     public function my()

@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\TentangController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\PesananController;
@@ -8,7 +11,6 @@ use App\Http\Controllers\PromoController;
 use App\Http\Controllers\ReservasiController;
 use App\Http\Controllers\PaketLayananController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ProfilePelangganController;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 Route::get('/', [LandingPageController::class, 'index'])->name('landing');
+Route::get('/tentang', [TentangController::class, 'index'])->name('tentang');
 
 /*
 |--------------------------------------------------------------------------
@@ -44,9 +47,20 @@ Route::middleware(['auth', 'role:pelanggan'])->group(function () {
     Route::get('/reservasi/review', [ReservasiController::class, 'review'])->name('reservasi.review');
     Route::post('/reservasi/confirm', [ReservasiController::class, 'confirm'])->name('reservasi.confirm');
     Route::get('/reservasi/payment/{id}', [ReservasiController::class, 'payment'])->name('reservasi.payment');
+    Route::post('/reservasi/upload-payment', [ReservasiController::class, 'uploadPayment'])->name('reservasi.upload-payment');
     Route::get('/reservasi/ticket/{id}', [ReservasiController::class, 'ticket'])->name('reservasi.ticket');
     Route::get('/reservasi/saya', [ReservasiController::class, 'my'])->name('reservasi.saya');
+    Route::delete('/reservasi/{id}', [ReservasiController::class, 'destroy'])->name('reservasi.destroy');
 });
+
+// Feedback
+    Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+    Route::get('/feedback/create', [FeedbackController::class, 'create'])->name('feedback.create');
+    Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+    Route::get('/feedback/{id}', [FeedbackController::class, 'show'])->name('feedback.show');
+    Route::get('/feedback/{id}/edit', [FeedbackController::class, 'edit'])->name('feedback.edit');
+    Route::put('/feedback/{id}', [FeedbackController::class, 'update'])->name('feedback.update');
+    Route::delete('/feedback/{id}', [FeedbackController::class, 'destroy'])->name('feedback.destroy');
 
 
 /*

@@ -9,19 +9,15 @@ class Feedback extends Model
     protected $table = 'feedback';
 
     protected $fillable = [
-        'id_pelanggan',
+        'user_id',
+        'judul',
         'rating',
         'komentar',
         'tanggal_feedback',
     ];
 
-    public function pelanggan()
+    public function user()
     {
-        return $this->belongsTo(Pelanggan::class, 'id_pelanggan');
-    }
-
-    public function pemesanan()
-    {
-        return $this->belongsTo(Pemesanan::class, 'id_pemesanan');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

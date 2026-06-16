@@ -108,37 +108,47 @@
         <!-- Testimonials Section -->
         <h2 class="title-center">Apa Kata Mereka Tentang Kami</h2>
 
+        @if($feedbacks->isEmpty())
         <div class="testi-grid">
-            <!-- Testimonial 1 -->
             <div class="testi-card">
                 <p>"Tempatnya asri banget, hutan bambunya adem dan nyaman buat healing"</p>
                 <div class="stars">★★★★☆</div>
+                <b>Pengunjung Bhumi Bambu</b>
             </div>
-
-            <!-- Testimonial 2 -->
             <div class="testi-card">
                 <p>"Camping di sini menyenangkan, suasananya tenang dan fasilitasnya cukup lengkap"</p>
                 <div class="stars">★★★★☆</div>
+                <b>Pengunjung Bhumi Bambu</b>
             </div>
-
-            <!-- Testimonial 3 -->
             <div class="testi-card">
                 <p>"Outbound sama teman-teman kantor jadi makin kompak. Recommended banget!"</p>
                 <div class="stars">★★★★☆</div>
+                <b>Pengunjung Bhumi Bambu</b>
             </div>
         </div>
+        @else
+        <div class="testi-grid">
+            @foreach($feedbacks as $fb)
+            <div class="testi-card">
+                <p>"{{ Str::limit($fb->komentar, 120) }}"</p>
+                <div class="stars">
+                    @for($i = 1; $i <= 5; $i++){{ $i <= $fb->rating ? '★' : '☆' }}@endfor
+                </div>
+                <b>{{ $fb->user->nama_user ?? 'Pengunjung' }}</b>
+            </div>
+            @endforeach
+        </div>
+        @endif
+
+        <p class="testi-cta-text">
+            Sudah pernah berkunjung? <a href="{{ route('login') }}">Masuk</a> untuk memberikan ulasan Anda.
+        </p>
 
     </div>
 </div>
 <!-- Page Background End -->
 
 @endsection
-
-@if(session('success'))
-  <div style="padding:10px; background:#d1fae5; border:1px solid #10b981; margin:10px 0; border-radius:8px;">
-    {{ session('success') }}
-  </div>
-@endif
 
 @push('scripts')
 <script>

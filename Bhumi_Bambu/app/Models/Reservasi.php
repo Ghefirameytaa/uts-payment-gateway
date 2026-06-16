@@ -21,7 +21,6 @@ class Reservasi extends Model
         'jam_acara',
         'jumlah_orang',
         'catatan',
-        'bukti_transfer',
         'catatan_pembayaran',
         'status',
         'status_pembayaran',

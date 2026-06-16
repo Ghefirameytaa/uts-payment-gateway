@@ -14,7 +14,7 @@
     <div class="bb-container bb-hero-inner">
       <div class="bb-hero-left">
         <span class="bb-hero-label">Beranda Pelanggan</span>
-        <h1 class="bb-hero-title">Halo, {{ auth()->user()->nama_user }} 👋</h1>
+        <h1 class="bb-hero-title">Halo, Farah 👋</h1>
         <p class="bb-hero-sub">Pilih paket yang kamu butuhkan, lalu lanjutkan reservasi dengan mudah.</p>
       </div>
 
@@ -139,6 +139,97 @@
           </div>
         </article>
 
+      </div>
+
+    </div>
+  </section>
+
+  {{-- FEEDBACK SECTION --}}
+  <section class="bb-feedback" style="padding-bottom: 60px;">
+    <div class="bb-container">
+      
+      <div class="bb-paket-head" style="margin-bottom: 24px;">
+        <div>
+          <h2 class="bb-paket-title">Ulasan Pengunjung</h2>
+          <p class="bb-paket-sub">Apa kata mereka tentang pengalaman berkunjung ke Bhumi Bambu</p>
+        </div>
+        <a class="bb-paket-more" href="{{ route('feedback.index') }}">
+          Kelola ulasan
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+      {{-- My Feedback Actions (CRUD) --}}
+      <div class="my-feedback-panel">
+        @if($myFeedback)
+          <div class="my-fb-box">
+            <div class="my-fb-info">
+              <span class="my-fb-badge">Ulasan Anda</span>
+              <div class="my-fb-stars">
+                @for($i = 1; $i <= 5; $i++)
+                  <span class="star-mini {{ $i <= $myFeedback->rating ? 'filled' : '' }}">★</span>
+                @endfor
+              </div>
+              <h4 class="my-fb-title">{{ $myFeedback->judul }}</h4>
+              <p class="my-fb-text">"{{ Str::limit($myFeedback->komentar, 120) }}"</p>
+            </div>
+            <div class="my-fb-actions">
+              <a href="{{ route('feedback.show', $myFeedback->id) }}" class="bb-btn-mini outline">
+                <i class="far fa-eye"></i> Lihat
+              </a>
+              <a href="{{ route('feedback.edit', $myFeedback->id) }}" class="bb-btn-mini edit">
+                <i class="far fa-edit"></i> Edit
+              </a>
+              <form action="{{ route('feedback.destroy', $myFeedback->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus feedback Anda?')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="bb-btn-mini delete">
+                  <i class="far fa-trash-alt"></i> Hapus
+                </button>
+              </form>
+            </div>
+          </div>
+        @else
+          <div class="my-fb-empty">
+            <div class="empty-fb-text">
+              <h4>Bagikan Pengalaman Anda</h4>
+              <p>Anda belum memberikan feedback. Berikan penilaian untuk kunjungan Anda.</p>
+            </div>
+            <a href="{{ route('feedback.create') }}" class="bb-btn-mini create-new">
+              <i class="far fa-comment-dots" style="margin-right: 6px;"></i> Tulis Feedback
+            </a>
+          </div>
+        @endif
+      </div>
+
+      {{-- Recent Feedbacks Grid --}}
+      <div class="fb-scroll-grid">
+        @if($feedbacks->isEmpty())
+          <div class="fb-empty-state">Belum ada ulasan dari pengunjung lain.</div>
+        @else
+          @foreach($feedbacks as $fb)
+            @if(!$myFeedback || $fb->id !== $myFeedback->id)
+              <div class="fb-item-card">
+                <div class="fb-item-head">
+                  <div class="fb-avatar">{{ strtoupper(substr($fb->user->nama_user ?? 'U', 0, 1)) }}</div>
+                  <div>
+                    <h5 class="fb-author-name">{{ $fb->user->nama_user ?? 'Pelanggan' }}</h5>
+                    <span class="fb-item-date">{{ \Carbon\Carbon::parse($fb->tanggal_feedback)->format('d M Y') }}</span>
+                  </div>
+                </div>
+                <div class="fb-item-rating">
+                  @for($i = 1; $i <= 5; $i++)
+                    <span class="star-mini {{ $i <= $fb->rating ? 'filled' : '' }}">★</span>
+                  @endfor
+                </div>
+                <h6 class="fb-item-title">{{ $fb->judul }}</h6>
+                <p class="fb-item-comment">"{{ Str::limit($fb->komentar, 90) }}"</p>
+              </div>
+            @endif
+          @endforeach
+        @endif
       </div>
 
     </div>
@@ -514,6 +605,270 @@
     }
     
     .bb-card-media{ height: 145px; }
+  }
+
+  /* ===== FEEDBACK SECTION STYLES ===== */
+  .my-feedback-panel {
+    margin-bottom: 32px;
+  }
+  
+  .my-fb-box {
+    background: #fff;
+    border: 1px solid rgba(45, 85, 48, 0.15);
+    border-left: 4px solid var(--green);
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .my-fb-info {
+    flex: 1;
+  }
+
+  .my-fb-badge {
+    display: inline-block;
+    background: rgba(45, 85, 48, 0.08);
+    color: var(--green);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .my-fb-stars, .fb-item-rating {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 6px;
+  }
+
+  .star-mini {
+    font-size: 0.95rem;
+    color: #d1d5db;
+  }
+
+  .star-mini.filled {
+    color: #f59e0b;
+  }
+
+  .my-fb-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .my-fb-text {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  .my-fb-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .bb-btn-mini {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s;
+  }
+
+  .bb-btn-mini.outline {
+    background: #f3f4f6;
+    color: var(--text-secondary);
+  }
+
+  .bb-btn-mini.outline:hover {
+    background: #e5e7eb;
+  }
+
+  .bb-btn-mini.edit {
+    background: rgba(246, 160, 26, 0.1);
+    color: var(--orangeText);
+    border: 1px solid rgba(246, 160, 26, 0.2);
+  }
+
+  .bb-btn-mini.edit:hover {
+    background: var(--orange);
+    color: white;
+  }
+
+  .bb-btn-mini.delete {
+    background: rgba(239, 68, 68, 0.08);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.15);
+  }
+
+  .bb-btn-mini.delete:hover {
+    background: #dc2626;
+    color: white;
+  }
+
+  .my-fb-empty {
+    background: #fff;
+    border: 1.5px dashed rgba(45, 85, 48, 0.2);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .empty-fb-icon {
+    font-size: 1.8rem;
+  }
+
+  .empty-fb-text {
+    flex: 1;
+  }
+
+  .empty-fb-text h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .empty-fb-text p {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .bb-btn-mini.create-new {
+    background: var(--green);
+    color: white;
+    padding: 10px 18px;
+  }
+
+  .bb-btn-mini.create-new:hover {
+    background: var(--green-light);
+    transform: translateY(-1px);
+  }
+
+  /* Recent Feedbacks List */
+  .fb-scroll-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .fb-item-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.2s;
+  }
+
+  .fb-item-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+    border-color: rgba(45, 85, 48, 0.1);
+  }
+
+  .fb-item-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .fb-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--green);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+
+  .fb-author-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .fb-item-date {
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .fb-item-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+    margin-top: 6px;
+  }
+
+  .fb-item-comment {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  .fb-empty-state {
+    grid-column: span 3;
+    text-align: center;
+    padding: 32px;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 900px) {
+    .fb-scroll-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 600px) {
+    .my-fb-box {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .my-fb-actions {
+      width: 100%;
+      display: flex;
+    }
+    .my-fb-actions .bb-btn-mini {
+      flex: 1;
+      justify-content: center;
+    }
+    .my-fb-empty {
+      flex-direction: column;
+      align-items: stretch;
+      text-align: center;
+      gap: 12px;
+    }
+    .fb-scroll-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 

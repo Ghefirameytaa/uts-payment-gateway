@@ -26,6 +26,22 @@
     </div>
   </section>
 
+  {{-- Flash Messages --}}
+  @if(session('success'))
+    <div class="flash-alert flash-success" id="flashAlert">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10L8 14L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      {{ session('success') }}
+      <button class="flash-close" onclick="document.getElementById('flashAlert').remove()">&times;</button>
+    </div>
+  @endif
+  @if(session('error'))
+    <div class="flash-alert flash-error" id="flashAlert">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 6V10M10 14H10.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2"/></svg>
+      {{ session('error') }}
+      <button class="flash-close" onclick="document.getElementById('flashAlert').remove()">&times;</button>
+    </div>
+  @endif
+
   <section class="res-list-section">
     <div class="res-container">
       
@@ -58,19 +74,15 @@
                 </span>
               @elseif($reservasi->status_pembayaran == 'menunggu_verifikasi')
                 <span class="card-status menunggu">
-                  <i class="fas fa-clock"></i> Menunggu Verifikasi
+                  <i class="fas fa-clock"></i> Menunggu Konfirmasi
                 </span>
               @elseif($reservasi->status_pembayaran == 'ditolak')
                 <span class="card-status ditolak">
-                  <i class="fas fa-times-circle"></i> Ditolak
-                </span>
-              @elseif($reservasi->status == 'pending')
-                <span class="card-status pending">
-                  <i class="fas fa-hourglass-half"></i> Pending
+                  <i class="fas fa-times-circle"></i> Dibatalkan
                 </span>
               @else
-                <span class="card-status belum-upload">
-                  <i class="fas fa-upload"></i> Belum Upload
+                <span class="card-status pending">
+                  <i class="fas fa-hourglass-half"></i> Belum Bayar
                 </span>
               @endif
             </div>
@@ -115,14 +127,13 @@
               </div>
 
               <div class="card-price">
-                <span class="price-label">Total Pembayaran: (1 paket)</span>
-                <span class="price-value">Rp {{ number_format($reservasi->paket->harga ?? 0, 0, ',', '.') }}</span>
+                <span class="price-label">Total:</span>
+                <span class="price-value">Rp {{ number_format(($reservasi->paket->harga ?? 0) * $reservasi->jumlah_orang, 0, ',', '.') }}</span>
               </div>
 
-              {{-- PERBAIKAN: Tombol aksi berdasarkan status_pembayaran --}}
+              {{-- Tombol aksi berdasarkan status_pembayaran --}}
               <div class="card-actions">
                 @if($reservasi->status_pembayaran == 'lunas')
-                  {{-- Jika sudah lunas, tampilkan tombol lihat e-ticket --}}
                   <a href="{{ route('reservasi.ticket', $reservasi->id) }}" class="card-btn primary">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                       <path d="M2 8L6 12L14 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -130,32 +141,31 @@
                     Lihat E-Ticket
                   </a>
                 @elseif($reservasi->status_pembayaran == 'menunggu_verifikasi')
-                  {{-- Jika menunggu verifikasi, tampilkan status menunggu --}}
-                  <a href="{{ route('reservasi.ticket', $reservasi->id) }}" class="card-btn info">
+                  <a href="{{ route('reservasi.payment', $reservasi->id) }}" class="card-btn info">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                      <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>
                       <path d="M8 4V8L10.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                     </svg>
-                    Lihat E-Ticket
+                    Cek Status Pembayaran
                   </a>
-                @elseif($reservasi->status_pembayaran == 'ditolak')
-                  {{-- Jika ditolak, bisa upload ulang --}}
-                  <a href="{{ route('reservasi.payment', $reservasi->id) }}" class="card-btn warning">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                      <path d="M8 4V8M8 10V11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                      <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>
-                    </svg>
-                    Upload Ulang Bukti
-                  </a>
-                @elseif($reservasi->status == 'pending')
-                  {{-- Jika pending (belum upload bukti) --}}
+                @else
+                  {{-- Belum Bayar: Tampilkan Bayar + Hapus --}}
                   <a href="{{ route('reservasi.payment', $reservasi->id) }}" class="card-btn secondary">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                       <rect x="2" y="4" width="12" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/>
                       <path d="M2 7H14M5 10H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                     </svg>
-                    Upload Pembayaran
+                    Bayar Sekarang
                   </a>
+                  <button
+                    type="button"
+                    class="card-btn danger"
+                    onclick="confirmDelete({{ $reservasi->id }}, '{{ $reservasi->kode_booking ?? 'BKG-' . str_pad($reservasi->id, 6, '0', STR_PAD_LEFT) }}')"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M3 4H13M6 4V3H10V4M5 4L5.5 13H10.5L11 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Hapus
+                  </button>
                 @endif
               </div>
             </div>
@@ -168,6 +178,28 @@
     </div>
   </section>
 
+</div>
+
+{{-- Modal Konfirmasi Hapus --}}
+<div id="deleteModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-icon">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="24" r="20" fill="rgba(239,68,68,0.1)"/>
+        <path d="M24 16V24M24 32H24.01" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h3 class="modal-title">Hapus Reservasi?</h3>
+    <p class="modal-desc">Anda akan menghapus reservasi <strong id="modalBookingCode"></strong>. Tindakan ini tidak dapat dibatalkan.</p>
+    <div class="modal-actions">
+      <button type="button" class="modal-btn cancel" onclick="closeModal()">Batal</button>
+      <form id="deleteForm" method="POST">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="modal-btn confirm">Ya, Hapus</button>
+      </form>
+    </div>
+  </div>
 </div>
 
 <style>
@@ -517,6 +549,137 @@
     color: white;
   }
 
+  .card-btn.danger {
+    background: rgba(239, 68, 68, 0.08);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    cursor: pointer;
+  }
+
+  .card-btn.danger:hover {
+    background: #ef4444;
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  /* Flash Alert */
+  .flash-alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 1200px;
+    margin: 0 auto 24px;
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .flash-success {
+    background: rgba(16, 185, 129, 0.12);
+    color: #065f46;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+
+  .flash-error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #991b1b;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+  }
+
+  .flash-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.6;
+    line-height: 1;
+  }
+
+  .flash-close:hover { opacity: 1; }
+
+  /* Delete Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-box {
+    background: white;
+    border-radius: 20px;
+    padding: 40px 32px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    animation: modalIn 0.2s ease;
+  }
+
+  @keyframes modalIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+
+  .modal-icon { margin-bottom: 16px; }
+
+  .modal-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .modal-desc {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .modal-btn {
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+  }
+
+  .modal-btn.cancel {
+    background: #f3f4f6;
+    color: var(--text);
+  }
+
+  .modal-btn.cancel:hover {
+    background: #e5e7eb;
+  }
+
+  .modal-btn.confirm {
+    background: #ef4444;
+    color: white;
+  }
+
+  .modal-btn.confirm:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+  }
+
   /* Responsive */
   @media (max-width: 768px) {
     .res-container {
@@ -547,5 +710,31 @@
     }
   }
 </style>
+
+<script>
+  function confirmDelete(id, kodeBooking) {
+    document.getElementById('modalBookingCode').textContent = kodeBooking;
+    document.getElementById('deleteForm').action = '/reservasi/' + id;
+    document.getElementById('deleteModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  // Tutup modal kalau klik di luar box
+  document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // Auto-dismiss flash alert setelah 4 detik
+  setTimeout(function() {
+    const alert = document.getElementById('flashAlert');
+    if (alert) alert.style.transition = 'opacity 0.5s', alert.style.opacity = '0',
+      setTimeout(() => alert.remove(), 500);
+  }, 4000);
+</script>
 
 @endsection

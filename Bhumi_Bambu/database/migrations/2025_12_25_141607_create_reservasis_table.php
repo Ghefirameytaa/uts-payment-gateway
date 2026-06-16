@@ -22,7 +22,6 @@ return new class extends Migration
             $table->time('jam_acara');
             $table->unsignedInteger('jumlah_orang');
             $table->text('catatan')->nullable();
-            $table->string('bukti_transer');
             $table->text('catatan_pembayaran');
             $table->enum('status', ['pending', 'menunggu_pembayaran', 'lunas'])->default('pending');
             $table->enum('status_pembayaran', ['belum_bayar', 'menunggu_verifikasi', 'lunas'])->default('belum_bayar');
